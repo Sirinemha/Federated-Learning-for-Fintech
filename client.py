@@ -28,9 +28,6 @@ if __name__ == "__main__":
         warm_start=True,  # prevent refreshing weights when fitting
     )
  
-    # Setting initial parameters, akin to model.compile for keras models
-    utils.set_initial_params(model)
-
     # Define Flower client
     class FlowerClient(fl.client.NumPyClient):
         #return the model weight as a list of NumPy ndarrays
@@ -57,8 +54,11 @@ if __name__ == "__main__":
         def evaluate(self, parameters, config):  # type: ignore
             utils.set_model_params(model, parameters)
             loss = log_loss(y_test, model.predict_proba(x_test))
-            roc_auc_score = model.score(x_test, y_test)
-            return loss, len(x_test), {"roc_auc_score": roc_auc_score}
+            accuracy = model.score(x_test, y_test)
+            return loss, len(x_test), {"accuracy": accuracy}
+
+    # Setting initial parameters, akin to model.compile for keras models
+    utils.set_initial_params(model)
 
     # Start Flower client
     fl.client.start_numpy_client(server_address="localhost:"+str(sys.argv[1]), client=FlowerClient())

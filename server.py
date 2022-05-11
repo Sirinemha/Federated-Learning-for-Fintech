@@ -1,6 +1,6 @@
 import flwr as fl
 import utils
-from sklearn.metrics import log_loss, roc_auc_score
+from sklearn.metrics import log_loss, accuracy
 from sklearn.linear_model import LogisticRegression
 from typing import Dict
 import sys
@@ -23,13 +23,12 @@ def get_eval_fn(model: LogisticRegression):
         # Update model with the latest parameters
         utils.set_model_params(model, parameters)
         loss = log_loss(y_test, model.predict_proba(X_test))
-        roc_auc_score = model.score(X_test, y_test)
-        return loss, {"roc_auc_score": roc_auc_score}
+        accuracy = model.score(X_test, y_test)
+        return loss, {"accuracy": accuracy}
 
     return evaluate
 
 ###############################################################
-
 class SaveModelStrategy(fl.server.strategy.FedAvg):
     def aggregate_fit(
         self,
@@ -38,13 +37,15 @@ class SaveModelStrategy(fl.server.strategy.FedAvg):
         failures
     ):
         aggregated_weights = self.aggregate_fit(rnd, results, failures)
-        #if aggregated_weights is not None:
-            # Save aggregated_weights
-            #print(f"Saving round {rnd} aggregated_weights...")
-            #np.savez(f"round-{rnd}-weights.npz", *aggregated_weights)
+        if aggregated_weights is not None:
+             #Save aggregated_weights
+            print(f"Saving round {rnd} aggregated_weights...")
+            np.savez(f"round-{rnd}-weights.npz", *aggregated_weights)
         return aggregated_weights
 
-strategy1= SaveModelStrategy()
+strategy= SaveModelStrategy()
+
+
 
 ################################################################
 
