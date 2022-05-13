@@ -23,7 +23,7 @@ def get_model_parameters(model: LogisticRegression) -> LogRegParams:
 def set_model_params(
     model: LogisticRegression, params: LogRegParams
 ) -> LogisticRegression:
-    print(params)
+    #print(params)
     model.coef_ = params[0]
     if model.fit_intercept:
         model.intercept_ = params[1]
@@ -33,7 +33,7 @@ def set_model_params(
 def set_initial_params(model: LogisticRegression):
 
     n_classes = 2  # MNIST has 2 classes
-    n_features = 29  # Number of features in dataset
+    n_features = 21  # Number of features in dataset
     model.classes_ = np.array([i for i in range(2)])
 
     model.coef_ = np.zeros((n_classes, n_features))
@@ -42,7 +42,7 @@ def set_initial_params(model: LogisticRegression):
 
 
 def load_data() -> Dataset:
-    data=pd.read_csv('X_train.csv')
+    data=pd.read_csv('cleaned_dataset.csv')
     X=data.drop("loan_default",1)
     y=data.loan_default
     x_train, x_test, y_train, y_test = train_test_split(X,y, test_size=0.25, random_state=42)
